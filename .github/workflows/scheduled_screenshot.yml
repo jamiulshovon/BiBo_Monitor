@@ -2,16 +2,16 @@ name: BiBoTracker Admin Screenshot Monitor
 
 on:
   schedule:
-    # 06:05 AM Bangladesh Time (00:05 UTC)
-    - cron: '5 0 * * *'
-    # 10:05 AM Bangladesh Time (04:05 UTC)
-    - cron: '5 4 * * *'
-    # 02:05 PM Bangladesh Time (08:05 UTC)
-    - cron: '5 8 * * *'
+    # 05:40 AM Bangladesh Time (23:40 UTC previous day)
+    - cron: '40 23 * * *'
+    # 10:00 AM Bangladesh Time (04:00 UTC)
+    - cron: '0 4 * * *'
+    # 01:30 PM Bangladesh Time (07:30 UTC)
+    - cron: '30 7 * * *'
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Optional screenshot tag (leave blank for auto 06AM/10AM/02PM)'
+        description: 'Optional screenshot tag (leave blank for auto detection)'
         required: false
         default: 'auto'
       zoom:

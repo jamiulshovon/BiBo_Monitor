@@ -1,5 +1,5 @@
 """
-scheduler.py - Continuous scheduler daemon for 6 AM, 10 AM, and 2 PM (Bangladesh Time).
+scheduler.py - Continuous scheduler daemon for 5:40 AM, 10:00 AM, and 1:30 PM (Bangladesh Time).
 
 Run this in a terminal or background process:
     python scheduler.py
@@ -12,9 +12,9 @@ from take_screenshot import take_screenshot, BD_TZ
 import config
 
 TARGET_TIMES = [
-    (6, 0, "06AM"),    # 06:00 AM BST
-    (10, 0, "10AM"),   # 10:00 AM BST
-    (14, 0, "02PM"),   # 02:00 PM BST (14:00)
+    (5, 40, "05_40AM"),  # 05:40 AM BST
+    (10, 0, "10AM"),     # 10:00 AM BST
+    (13, 30, "01_30PM"), # 01:30 PM BST (13:30)
 ]
 
 def get_next_run():

@@ -193,14 +193,15 @@ def take_screenshot(tag="", target_url=None, zoom=None, headless=True):
     # Auto-detect tag if not provided
     if not tag or tag.lower() == "auto":
         hour = bd_now.hour
-        if 5 <= hour <= 7:
-            tag = "06AM"
+        minute = bd_now.minute
+        if (hour == 5 and minute >= 20) or (hour == 6 and minute <= 20):
+            tag = "05_40AM"
         elif 9 <= hour <= 11:
             tag = "10AM"
-        elif 13 <= hour <= 15:
-            tag = "02PM"
+        elif (hour == 13 and minute >= 10) or (hour == 14 and minute <= 10):
+            tag = "01_30PM"
         else:
-            tag = bd_now.strftime("%I%p")
+            tag = bd_now.strftime("%I_%M%p")
 
     time_display = bd_now.strftime("%Y-%m-%d %I:%M:%S %p %Z")
     filename_time = bd_now.strftime("%Y-%m-%d_%H-%M-%S")

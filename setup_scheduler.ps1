@@ -15,9 +15,9 @@ Write-Host "Script: $scriptPath" -ForegroundColor DarkGray
 Write-Host "==========================================================" -ForegroundColor Cyan
 
 $schedules = @(
-    @{ Name = "BiBoTracker_06AM"; Time = "06:00"; Tag = "06AM" },
+    @{ Name = "BiBoTracker_0540AM"; Time = "05:40"; Tag = "05_40AM" },
     @{ Name = "BiBoTracker_10AM"; Time = "10:00"; Tag = "10AM" },
-    @{ Name = "BiBoTracker_02PM"; Time = "14:00"; Tag = "02PM" }
+    @{ Name = "BiBoTracker_0130PM"; Time = "13:30"; Tag = "01_30PM" }
 )
 
 foreach ($item in $schedules) {

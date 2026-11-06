@@ -29,4 +29,4 @@ VIEWPORT = {
 ZOOM_LEVEL = os.getenv("ZOOM_LEVEL", "100%")
 
 # Scheduled times in 24h format (Bangladesh local time)
-SCHEDULE_TIMES = ["06:00", "10:00", "14:00"]
+SCHEDULE_TIMES = ["05:40", "10:00", "13:30"]

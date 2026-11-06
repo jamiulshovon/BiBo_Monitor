@@ -1,6 +1,6 @@
 # BiBoTracker Admin Automated Screenshot Monitor
 
-Automated screenshot monitoring system for [`https://bibotracker.com/admin`](https://bibotracker.com/admin) to track active users at **6:00 AM**, **10:00 AM**, and **2:00 PM** (Bangladesh Standard Time - BST / UTC+6).
+Automated screenshot monitoring system for [`https://bibotracker.com/admin`](https://bibotracker.com/admin) to track active users at **5:40 AM**, **10:00 AM**, and **1:30 PM** (Bangladesh Standard Time - BST / UTC+6).
 
 ---
 
@@ -83,9 +83,9 @@ Run PowerShell as Administrator or standard user and execute:
 powershell -ExecutionPolicy Bypass -File .\setup_scheduler.ps1
 ```
 This registers 3 daily silent background tasks in Windows:
-- `BiBoTracker_06AM` -> Every day at 06:00 AM
+- `BiBoTracker_0540AM` -> Every day at 05:40 AM
 - `BiBoTracker_10AM` -> Every day at 10:00 AM
-- `BiBoTracker_02PM` -> Every day at 02:00 PM (14:00)
+- `BiBoTracker_0130PM` -> Every day at 01:30 PM (13:30)
 
 *To remove them later: `powershell -ExecutionPolicy Bypass -File .\remove_scheduler.ps1`*
 
@@ -125,6 +125,6 @@ If your computer is off or sleeping at 6:00 AM, GitHub Actions runs **100% in th
      - *(Optional)* `BIBO_TARGET_URL`: Defaults to `https://bibotracker.com/admin`.
 
 5. **Schedule & Viewing**:
-   - The workflow runs automatically at **06:00 AM**, **10:00 AM**, and **02:00 PM** Bangladesh Standard Time (UTC+6).
+   - The workflow runs automatically at **05:40 AM**, **10:00 AM**, and **01:30 PM** Bangladesh Standard Time (UTC+6).
    - Screenshots are pushed directly to the `screenshots/` folder in your GitHub repository, so you can view them anytime from your mobile or PC!
    - You can also test it immediately by opening the **Actions** tab on GitHub, selecting **BiBoTracker Admin Screenshot Monitor**, and clicking **Run workflow**.
