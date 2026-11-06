@@ -66,8 +66,8 @@ def inject_timestamp_banner(page, bd_time_str, tag=""):
         print(f"Notice: Failed to inject banner ({e})")
 
 def apply_zoom(page, zoom_level):
-    """Applies CSS zoom out so dashboards fit comfortably without clipping."""
-    if not zoom_level:
+    """Applies CSS zoom out if requested."""
+    if not zoom_level or str(zoom_level).strip() in ("100%", "1", "1.0"):
         return
     zoom_str = str(zoom_level).strip()
     if zoom_str.replace('.', '', 1).isdigit():
@@ -85,6 +85,75 @@ def apply_zoom(page, zoom_level):
         page.wait_for_timeout(600)
     except Exception as e:
         print(f"Notice: Could not set zoom ({e})")
+
+def expand_table_and_adjust_viewport(page):
+    """
+    Ensures that scrollable containers, fixed height flex layouts, and table wrappers
+    are expanded so that all employees in the table are 100% visible from top to bottom
+    without being cut off or hidden behind a scrollbar.
+    """
+    js_code = """
+    () => {
+        // 1. Unconstrain main layout wrappers
+        document.documentElement.style.height = 'auto';
+        document.documentElement.style.overflow = 'visible';
+        document.body.style.height = 'auto';
+        document.body.style.overflow = 'visible';
+
+        const root = document.getElementById('root');
+        if (root) {
+            root.style.height = 'auto';
+            root.style.minHeight = '100%';
+            root.style.overflow = 'visible';
+        }
+
+        // 2. Expand all scroll containers and fixed screen heights
+        document.querySelectorAll('*').forEach(el => {
+            const style = window.getComputedStyle(el);
+            if (style.overflowY === 'auto' || style.overflowY === 'scroll' || style.overflow === 'hidden') {
+                el.style.overflow = 'visible';
+                el.style.overflowY = 'visible';
+                el.style.maxHeight = 'none';
+            }
+            if (el.classList.contains('h-screen') || style.height.includes('100vh') || style.maxHeight.includes('100vh')) {
+                el.style.height = 'auto';
+                el.style.maxHeight = 'none';
+                el.style.minHeight = '100vh';
+            }
+        });
+
+        // 3. Specifically expand table and all its parent containers
+        const table = document.querySelector('table');
+        let tableBottom = 0;
+        if (table) {
+            let parent = table.parentElement;
+            while (parent && parent !== document.body) {
+                parent.style.height = 'auto';
+                parent.style.maxHeight = 'none';
+                parent.style.overflow = 'visible';
+                parent.style.overflowY = 'visible';
+                parent = parent.parentElement;
+            }
+            const rect = table.getBoundingClientRect();
+            tableBottom = rect.bottom + window.scrollY;
+        }
+
+        // Return the total height needed to show everything
+        const bodyHeight = document.body.scrollHeight;
+        const docHeight = document.documentElement.scrollHeight;
+        return Math.max(bodyHeight, docHeight, tableBottom + 120);
+    }
+    """
+    try:
+        content_height = page.evaluate(js_code)
+        # Set viewport height to comfortably encompass all rows (min 1600px)
+        needed_height = max(1600, int(content_height) + 100)
+        page.set_viewport_size({"width": 1920, "height": needed_height})
+        page.wait_for_timeout(800)
+        page.evaluate("() => window.scrollTo(0, 0)")
+        print(f"Auto-expanded layout: set viewport height to {needed_height}px to show all employees.")
+    except Exception as e:
+        print(f"Notice: Could not adjust viewport ({e})")
 
 def attempt_auto_login(page, context):
     """Attempts to auto-login if credentials are present in config."""
@@ -176,8 +245,15 @@ def take_screenshot(tag="", target_url=None, zoom=None, headless=True):
 
         # Allow extra time for client-side React table/cards to populate active users
         page.wait_for_timeout(4000)
+        try:
+            page.wait_for_selector('table tbody tr', timeout=5000)
+        except Exception:
+            pass
 
-        # Apply CSS zoom out (e.g. 80%) to fit more content comfortably
+        # Expand scrollable containers and dynamically adjust viewport height so all rows are visible
+        expand_table_and_adjust_viewport(page)
+
+        # Apply CSS zoom if requested (defaults to 100% full scale)
         apply_zoom(page, zoom_level)
 
         # Inject visible timestamp header

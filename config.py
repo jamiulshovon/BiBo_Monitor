@@ -19,14 +19,14 @@ AUTH_STATE_PATH = os.getenv("AUTH_STATE_PATH", "auth_state.json")
 # Bangladesh Timezone
 TIMEZONE = "Asia/Dhaka"
 
-# Browser viewport
+# Browser viewport (defaults to 1920x1600 to fit all employee rows)
 VIEWPORT = {
     "width": int(os.getenv("VIEWPORT_WIDTH", "1920")),
-    "height": int(os.getenv("VIEWPORT_HEIGHT", "1080"))
+    "height": int(os.getenv("VIEWPORT_HEIGHT", "1600"))
 }
 
-# Zoom level (e.g. "80%", "75%", "90%")
-ZOOM_LEVEL = os.getenv("ZOOM_LEVEL", "80%")
+# Zoom level (defaults to "100%", can be customized if needed)
+ZOOM_LEVEL = os.getenv("ZOOM_LEVEL", "100%")
 
 # Scheduled times in 24h format (Bangladesh local time)
 SCHEDULE_TIMES = ["06:00", "10:00", "14:00"]

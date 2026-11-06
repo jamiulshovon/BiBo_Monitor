@@ -13,9 +13,9 @@ on:
         required: false
         default: 'auto'
       zoom:
-        description: 'Zoom level (e.g. 80%, 75%, 70%)'
+        description: 'Zoom level (defaults to 100% full scale)'
         required: false
-        default: '80%'
+        default: '100%'
 
 permissions:
   contents: write
@@ -49,7 +49,7 @@ jobs:
           BIBO_EMAIL: ${{ secrets.BIBO_EMAIL }}
           BIBO_PASSWORD: ${{ secrets.BIBO_PASSWORD }}
           BIBO_TARGET_URL: ${{ secrets.BIBO_TARGET_URL || 'https://bibotracker.com/admin' }}
-          ZOOM_LEVEL: ${{ github.event.inputs.zoom || vars.ZOOM_LEVEL || '80%' }}
+          ZOOM_LEVEL: ${{ github.event.inputs.zoom || vars.ZOOM_LEVEL || '100%' }}
         run: |
           python take_screenshot.py --tag "${{ github.event.inputs.tag || 'auto' }}" --zoom "${{ env.ZOOM_LEVEL }}"
 
