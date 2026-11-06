@@ -42,7 +42,7 @@ jobs:
         env:
           BIBO_EMAIL: ${{ secrets.BIBO_EMAIL }}
           BIBO_PASSWORD: ${{ secrets.BIBO_PASSWORD }}
-          BIBO_TARGET_URL: ${{ secrets.BIBO_TARGET_URL }}
+          BIBO_TARGET_URL: ${{ secrets.BIBO_TARGET_URL || 'https://bibotracker.com/admin' }}
         run: |
           python take_screenshot.py --tag "${{ github.event.inputs.tag || 'auto' }}"
 

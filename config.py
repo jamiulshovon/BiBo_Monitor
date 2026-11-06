@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Admin target URL
-TARGET_URL = os.getenv("BIBO_TARGET_URL", "https://bibotracker.com/admin")
+TARGET_URL = os.getenv("BIBO_TARGET_URL") or "https://bibotracker.com/admin"
 
 # Optional credentials for automatic re-login if session expires
 BIBO_EMAIL = os.getenv("BIBO_EMAIL", "")

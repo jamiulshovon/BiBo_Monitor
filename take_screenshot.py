@@ -94,7 +94,7 @@ def attempt_auto_login(page, context):
         return False
 
 def take_screenshot(tag="", target_url=None, headless=True):
-    target_url = target_url or config.TARGET_URL
+    target_url = target_url or config.TARGET_URL or "https://bibotracker.com/admin"
     os.makedirs(config.SCREENSHOTS_DIR, exist_ok=True)
 
     bd_now = get_bd_time()
