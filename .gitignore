@@ -1,0 +1,11 @@
+# Environment variables & secrets (NEVER commit these)
+.env
+auth_state.json
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Virtual environments
+venv/
+.venv/

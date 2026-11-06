@@ -1,0 +1,67 @@
+name: BiBoTracker Admin Screenshot Monitor
+
+on:
+  schedule:
+    # 00:00 UTC = 06:00 AM Bangladesh Time (BST)
+    # 04:00 UTC = 10:00 AM Bangladesh Time (BST)
+    # 08:00 UTC = 02:00 PM Bangladesh Time (BST)
+    - cron: '0 0,4,8 * * *'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Optional screenshot tag (leave blank for auto 06AM/10AM/02PM)'
+        required: false
+        default: 'auto'
+
+permissions:
+  contents: write
+
+jobs:
+  capture-screenshot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          playwright install --with-deps chromium
+
+      - name: Capture BiBoTracker screenshot
+        env:
+          BIBO_EMAIL: ${{ secrets.BIBO_EMAIL }}
+          BIBO_PASSWORD: ${{ secrets.BIBO_PASSWORD }}
+          BIBO_TARGET_URL: ${{ secrets.BIBO_TARGET_URL }}
+        run: |
+          python take_screenshot.py --tag "${{ github.event.inputs.tag || 'auto' }}"
+
+      - name: Commit and push screenshot to repository
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git pull --rebase origin main || true
+          git add screenshots/
+          if git diff --cached --quiet; then
+            echo "No new screenshots to commit."
+          else
+            git commit -m "Auto-capture BiBoTracker: $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git push origin main
+          fi
+
+      - name: Upload screenshots artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bibo-screenshots
+          path: screenshots/
+          retention-days: 30
