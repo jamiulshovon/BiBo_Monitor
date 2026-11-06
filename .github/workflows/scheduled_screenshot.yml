@@ -2,10 +2,12 @@ name: BiBoTracker Admin Screenshot Monitor
 
 on:
   schedule:
-    # 00:00 UTC = 06:00 AM Bangladesh Time (BST)
-    # 04:00 UTC = 10:00 AM Bangladesh Time (BST)
-    # 08:00 UTC = 02:00 PM Bangladesh Time (BST)
-    - cron: '0 0,4,8 * * *'
+    # 06:05 AM Bangladesh Time (00:05 UTC)
+    - cron: '5 0 * * *'
+    # 10:05 AM Bangladesh Time (04:05 UTC)
+    - cron: '5 4 * * *'
+    # 02:05 PM Bangladesh Time (08:05 UTC)
+    - cron: '5 8 * * *'
   workflow_dispatch:
     inputs:
       tag:
