@@ -65,6 +65,27 @@ def inject_timestamp_banner(page, bd_time_str, tag=""):
     except Exception as e:
         print(f"Notice: Failed to inject banner ({e})")
 
+def apply_zoom(page, zoom_level):
+    """Applies CSS zoom out so dashboards fit comfortably without clipping."""
+    if not zoom_level:
+        return
+    zoom_str = str(zoom_level).strip()
+    if zoom_str.replace('.', '', 1).isdigit():
+        val = float(zoom_str)
+        if val <= 2.0:
+            zoom_str = f"{int(val * 100)}%"
+        else:
+            zoom_str = f"{int(val)}%"
+    elif not zoom_str.endswith("%"):
+        zoom_str = f"{zoom_str}%"
+
+    print(f"Applying zoom level: {zoom_str}")
+    try:
+        page.evaluate(f"() => {{ document.body.style.zoom = '{zoom_str}'; }}")
+        page.wait_for_timeout(600)
+    except Exception as e:
+        print(f"Notice: Could not set zoom ({e})")
+
 def attempt_auto_login(page, context):
     """Attempts to auto-login if credentials are present in config."""
     if not (config.BIBO_EMAIL and config.BIBO_PASSWORD):
@@ -93,8 +114,9 @@ def attempt_auto_login(page, context):
         print(f"Auto-login failed: {e}")
         return False
 
-def take_screenshot(tag="", target_url=None, headless=True):
+def take_screenshot(tag="", target_url=None, zoom=None, headless=True):
     target_url = target_url or config.TARGET_URL or "https://bibotracker.com/admin"
+    zoom_level = zoom or config.ZOOM_LEVEL
     os.makedirs(config.SCREENSHOTS_DIR, exist_ok=True)
 
     bd_now = get_bd_time()
@@ -119,6 +141,7 @@ def take_screenshot(tag="", target_url=None, headless=True):
 
     print(f"[{time_display}] Starting screenshot capture...")
     print(f"Target URL: {target_url}")
+    print(f"Configured Zoom: {zoom_level}")
 
     has_auth_file = os.path.exists(config.AUTH_STATE_PATH)
     if not has_auth_file:
@@ -154,6 +177,9 @@ def take_screenshot(tag="", target_url=None, headless=True):
         # Allow extra time for client-side React table/cards to populate active users
         page.wait_for_timeout(4000)
 
+        # Apply CSS zoom out (e.g. 80%) to fit more content comfortably
+        apply_zoom(page, zoom_level)
+
         # Inject visible timestamp header
         inject_timestamp_banner(page, time_display, tag=tag)
 
@@ -169,7 +195,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Capture BiBoTracker admin dashboard")
     parser.add_argument("--tag", default="", help="Optional label (e.g. 06am, 10am, 02pm)")
     parser.add_argument("--url", default="", help="Override target URL")
+    parser.add_argument("--zoom", default="", help="Zoom level (e.g. 80%, 75%, 90%)")
     parser.add_argument("--headful", action="store_true", help="Run browser visibly")
 
     args = parser.parse_args()
-    take_screenshot(tag=args.tag, target_url=args.url or None, headless=not args.headful)
+    take_screenshot(tag=args.tag, target_url=args.url or None, zoom=args.zoom or None, headless=not args.headful)

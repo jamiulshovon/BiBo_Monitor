@@ -12,6 +12,10 @@ on:
         description: 'Optional screenshot tag (leave blank for auto 06AM/10AM/02PM)'
         required: false
         default: 'auto'
+      zoom:
+        description: 'Zoom level (e.g. 80%, 75%, 70%)'
+        required: false
+        default: '80%'
 
 permissions:
   contents: write
@@ -45,8 +49,9 @@ jobs:
           BIBO_EMAIL: ${{ secrets.BIBO_EMAIL }}
           BIBO_PASSWORD: ${{ secrets.BIBO_PASSWORD }}
           BIBO_TARGET_URL: ${{ secrets.BIBO_TARGET_URL || 'https://bibotracker.com/admin' }}
+          ZOOM_LEVEL: ${{ github.event.inputs.zoom || vars.ZOOM_LEVEL || '80%' }}
         run: |
-          python take_screenshot.py --tag "${{ github.event.inputs.tag || 'auto' }}"
+          python take_screenshot.py --tag "${{ github.event.inputs.tag || 'auto' }}" --zoom "${{ env.ZOOM_LEVEL }}"
 
       - name: Commit and push screenshot to repository
         run: |

@@ -25,5 +25,8 @@ VIEWPORT = {
     "height": int(os.getenv("VIEWPORT_HEIGHT", "1080"))
 }
 
+# Zoom level (e.g. "80%", "75%", "90%")
+ZOOM_LEVEL = os.getenv("ZOOM_LEVEL", "80%")
+
 # Scheduled times in 24h format (Bangladesh local time)
 SCHEDULE_TIMES = ["06:00", "10:00", "14:00"]
