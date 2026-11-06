@@ -95,9 +95,36 @@ If you want to keep a terminal window running in the background:
 python scheduler.py
 ```
 
-#### Choice 3: 24/7 Cloud Monitoring (GitHub Actions)
-If your computer might be turned off or sleeping at 6 AM:
-1. Push this folder to a private GitHub repository.
-2. Go to **Settings > Secrets and variables > Actions**.
-3. Add `BIBO_EMAIL` and `BIBO_PASSWORD` secrets.
-4. The workflow in `.github/workflows/scheduled_screenshot.yml` will automatically trigger at 6 AM, 10 AM, and 2 PM BD time every day in GitHub's cloud runners.
+#### Choice 3: 24/7 Cloud Monitoring with GitHub Actions (Zero Local PC Requirement)
+
+If your computer is off or sleeping at 6:00 AM, GitHub Actions runs **100% in the cloud for free**:
+
+1. **Create a Private GitHub Repo**:
+   - Go to [github.com/new](https://github.com/new).
+   - Name it `bibo-tracker-monitor` and set it to **Private**.
+   - Do **not** check "Add a README" (your local repository already has everything).
+
+2. **Push your code to GitHub**:
+   In PowerShell (inside `W:\BIbo`):
+   ```powershell
+   git remote add origin https://github.com/<YOUR_GITHUB_USERNAME>/<YOUR_REPO_NAME>.git
+   git push -u origin main
+   ```
+
+3. **Set Workflow Write Permissions**:
+   - On GitHub, go to **Settings** → **Actions** → **General**.
+   - Scroll down to **Workflow permissions**.
+   - Select **Read and write permissions** (allows GitHub Actions to commit screenshots into `screenshots/`).
+   - Click **Save**.
+
+4. **Add Admin Credentials in Secrets**:
+   - Go to **Settings** → **Secrets and variables** → **Actions** → **New repository secret**.
+   - Add:
+     - `BIBO_EMAIL`: Your BiBoTracker admin login email.
+     - `BIBO_PASSWORD`: Your BiBoTracker admin password.
+     - *(Optional)* `BIBO_TARGET_URL`: Defaults to `https://bibotracker.com/admin`.
+
+5. **Schedule & Viewing**:
+   - The workflow runs automatically at **06:00 AM**, **10:00 AM**, and **02:00 PM** Bangladesh Standard Time (UTC+6).
+   - Screenshots are pushed directly to the `screenshots/` folder in your GitHub repository, so you can view them anytime from your mobile or PC!
+   - You can also test it immediately by opening the **Actions** tab on GitHub, selecting **BiBoTracker Admin Screenshot Monitor**, and clicking **Run workflow**.
