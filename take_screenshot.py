@@ -194,8 +194,10 @@ def take_screenshot(tag="", target_url=None, zoom=None, headless=True):
     if not tag or tag.lower() == "auto":
         hour = bd_now.hour
         minute = bd_now.minute
-        if (hour == 5 and minute >= 20) or (hour == 6 and minute <= 20):
-            tag = "05_40AM"
+        if 5 <= hour <= 6:
+            tag = "06AM"
+        elif hour == 9 and minute < 45:
+            tag = "09_28AM"
         elif 9 <= hour <= 11:
             tag = "10AM"
         elif (hour == 13 and minute >= 10) or (hour == 14 and minute <= 10):
