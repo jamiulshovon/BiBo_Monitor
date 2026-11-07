@@ -16,7 +16,7 @@ Write-Host "==========================================================" -Foregro
 
 $schedules = @(
     @{ Name = "BiBoTracker_06AM"; Time = "06:00"; Tag = "06AM" },
-    @{ Name = "BiBoTracker_0928AM"; Time = "09:28"; Tag = "09_28AM" },
+    @{ Name = "BiBoTracker_0934AM"; Time = "09:34"; Tag = "09_34AM" },
     @{ Name = "BiBoTracker_10AM"; Time = "10:00"; Tag = "10AM" },
     @{ Name = "BiBoTracker_0130PM"; Time = "13:30"; Tag = "01_30PM" }
 )
