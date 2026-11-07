@@ -1,6 +1,6 @@
 # BiBoTracker Admin Automated Screenshot Monitor
 
-Automated screenshot monitoring system for [`https://bibotracker.com/admin`](https://bibotracker.com/admin) to track active users at **5:40 AM**, **10:00 AM**, and **1:30 PM** (Bangladesh Standard Time - BST / UTC+6).
+Automated screenshot monitoring system for [`https://bibotracker.com/admin`](https://bibotracker.com/admin) to track active users at **6:00 AM**, **9:28 AM**, **10:00 AM**, and **1:30 PM** (Bangladesh Standard Time - BST / UTC+6).
 
 ---
 
