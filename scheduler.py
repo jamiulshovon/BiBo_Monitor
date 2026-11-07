@@ -13,7 +13,7 @@ import config
 
 TARGET_TIMES = [
     (6, 0, "06AM"),      # 06:00 AM BST
-    (9, 34, "09_34AM"),  # 09:34 AM BST
+    (9, 40, "09_40AM"),  # 09:40 AM BST
     (10, 0, "10AM"),     # 10:00 AM BST
     (13, 30, "01_30PM"), # 01:30 PM BST (13:30)
 ]

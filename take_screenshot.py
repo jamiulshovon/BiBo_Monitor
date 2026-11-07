@@ -197,7 +197,7 @@ def take_screenshot(tag="", target_url=None, zoom=None, headless=True):
         if 5 <= hour <= 6:
             tag = "06AM"
         elif hour == 9 and minute < 45:
-            tag = "09_34AM"
+            tag = "09_40AM"
         elif 9 <= hour <= 11:
             tag = "10AM"
         elif (hour == 13 and minute >= 10) or (hour == 14 and minute <= 10):
