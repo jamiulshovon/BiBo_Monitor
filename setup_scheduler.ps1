@@ -15,32 +15,32 @@ Write-Host "Script: $scriptPath" -ForegroundColor DarkGray
 Write-Host "==========================================================" -ForegroundColor Cyan
 
 $schedules = @(
-    @{ Name = "BiBoTracker_06AM"; Time = "06:00"; Tag = "06AM" },
-    @{ Name = "BiBoTracker_0940AM"; Time = "09:40"; Tag = "09_40AM" },
-    @{ Name = "BiBoTracker_10AM"; Time = "10:00"; Tag = "10AM" },
-    @{ Name = "BiBoTracker_0130PM"; Time = "13:30"; Tag = "01_30PM" }
+    @{ Name = "BiBoTracker_0610AM"; Time = "06:10"; Folder = "06-10_AM" },
+    @{ Name = "BiBoTracker_0820AM"; Time = "08:20"; Folder = "08-20_AM" },
+    @{ Name = "BiBoTracker_1255PM"; Time = "12:55"; Folder = "12-55_PM" },
+    @{ Name = "BiBoTracker_0200PM"; Time = "14:00"; Folder = "02-00_PM" }
 )
 
 foreach ($item in $schedules) {
     $taskName = $item.Name
     $dailyTime = $item.Time
-    $tag = $item.Tag
+    $folder = $item.Folder
 
-    $action = New-ScheduledTaskAction -Execute $pythonPath -Argument "`"$scriptPath`" --tag `"$tag`"" -WorkingDirectory $scriptDir
+    $action = New-ScheduledTaskAction -Execute $pythonPath -Argument "`"$scriptPath`" --folder `"$folder`"" -WorkingDirectory $scriptDir
     $trigger = New-ScheduledTaskTrigger -Daily -At $dailyTime
     $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -WakeToRun
 
     try {
         # Unregister if already exists
         Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue
-        Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Settings $settings -Description "BiBoTracker admin active monitor screenshot ($tag)" | Out-Null
-        Write-Host "[OK] Registered '$taskName' -> Daily at $dailyTime BST" -ForegroundColor Green
+        Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Settings $settings -Description "BiBoTracker admin active monitor screenshot ($folder)" | Out-Null
+        Write-Host "[OK] Registered '$taskName' -> Daily at $dailyTime BST into folder $folder" -ForegroundColor Green
     }
     catch {
         Write-Host "[ERROR] Failed to register '$taskName': $($_.Exception.Message)" -ForegroundColor Red
     }
 }
 
-Write-Host "`nAll 3 tasks successfully created!" -ForegroundColor Green
+Write-Host "`nAll 4 tasks successfully created!" -ForegroundColor Green
 Write-Host "Screenshots will be automatically saved to: $scriptDir\screenshots" -ForegroundColor Yellow
 Write-Host "You can view these tasks in Windows 'Task Scheduler'." -ForegroundColor Cyan

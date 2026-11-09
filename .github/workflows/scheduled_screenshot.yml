@@ -3,6 +3,10 @@ name: BiBoTracker Admin Screenshot Monitor
 on:
   workflow_dispatch:
     inputs:
+      folder:
+        description: 'Folder name (06-10_AM, 08-20_AM, 12-55_PM, 02-00_PM, or auto)'
+        required: false
+        default: 'auto'
       tag:
         description: 'Optional screenshot tag (leave blank for auto detection)'
         required: false
@@ -46,7 +50,7 @@ jobs:
           BIBO_TARGET_URL: ${{ secrets.BIBO_TARGET_URL || 'https://bibotracker.com/admin' }}
           ZOOM_LEVEL: ${{ github.event.inputs.zoom || vars.ZOOM_LEVEL || '100%' }}
         run: |
-          python take_screenshot.py --tag "${{ github.event.inputs.tag || 'auto' }}" --zoom "${{ env.ZOOM_LEVEL }}"
+          python take_screenshot.py --folder "${{ github.event.inputs.folder || 'auto' }}" --tag "${{ github.event.inputs.tag || 'auto' }}" --zoom "${{ env.ZOOM_LEVEL }}"
 
       - name: Commit and push screenshot to repository
         run: |

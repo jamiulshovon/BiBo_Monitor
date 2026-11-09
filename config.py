@@ -28,5 +28,13 @@ VIEWPORT = {
 # Zoom level (defaults to "100%", can be customized if needed)
 ZOOM_LEVEL = os.getenv("ZOOM_LEVEL", "100%")
 
-# Scheduled times in 24h format (Bangladesh local time)
-SCHEDULE_TIMES = ["06:00", "09:40", "10:00", "13:30"]
+# Scheduled times in 24h format (Bangladesh local time: 6:10 AM, 8:20 AM, 12:55 PM, 2:00 PM)
+SCHEDULE_TIMES = ["06:10", "08:20", "12:55", "14:00"]
+
+# Dedicated time folders inside screenshots/
+TIME_FOLDERS = [
+    "06-10_AM",
+    "08-20_AM",
+    "12-55_PM",
+    "02-00_PM"
+]

@@ -1,5 +1,7 @@
 """
 take_screenshot.py - Captures BiBoTracker admin dashboard with timestamp banner.
+Saves screenshots into fixed time folders (06-10_AM, 08-20_AM, 12-55_PM, 02-00_PM)
+with date-only filenames (YYYY-MM-DD.png).
 """
 
 import os
@@ -12,9 +14,69 @@ import config
 # Bangladesh Standard Time (BST) is UTC+6
 BD_TZ = timezone(timedelta(hours=6), name="BST")
 
+# Fixed schedule slots in Bangladesh Standard Time
+FIXED_SLOTS = [
+    (6, 10, "06-10_AM"),
+    (8, 20, "08-20_AM"),
+    (12, 55, "12-55_PM"),
+    (14, 0, "02-00_PM"),
+]
+
 def get_bd_time():
     """Returns the current datetime in Bangladesh Standard Time."""
     return datetime.now(BD_TZ)
+
+def resolve_folder(folder_arg="", tag_arg="", bd_dt=None):
+    """
+    Resolves the folder name into one of: 06-10_AM, 08-20_AM, 12-55_PM, 02-00_PM.
+    Supports exact names, friendly aliases, or automatic closest-slot detection.
+    """
+    if bd_dt is None:
+        bd_dt = get_bd_time()
+
+    folder_map = {
+        "06-10_am": "06-10_AM", "06-10": "06-10_AM", "0610": "06-10_AM", "6:10": "06-10_AM",
+        "06:10": "06-10_AM", "06am": "06-10_AM", "6am": "06-10_AM", "bibo 6": "06-10_AM",
+        "08-20_am": "08-20_AM", "08-20": "08-20_AM", "0820": "08-20_AM", "8:20": "08-20_AM",
+        "08:20": "08-20_AM", "08_20am": "08-20_AM", "08am": "08-20_AM", "8am": "08-20_AM",
+        "12-55_pm": "12-55_PM", "12-55": "12-55_PM", "1255": "12-55_PM", "12:55": "12-55_PM",
+        "12_55pm": "12-55_PM", "12pm": "12-55_PM", "bibo 12": "12-55_PM",
+        "02-00_pm": "02-00_PM", "02-00": "02-00_PM", "0200": "02-00_PM", "2:00": "02-00_PM",
+        "02:00": "02-00_PM", "2pm": "02-00_PM", "02pm": "02-00_PM", "01_30pm": "02-00_PM",
+        "14:00": "02-00_PM", "bibo 2": "02-00_PM"
+    }
+
+    # Check explicit folder_arg first
+    cleaned_folder = (folder_arg or "").strip().lower()
+    if cleaned_folder and cleaned_folder != "auto":
+        if cleaned_folder in folder_map:
+            return folder_map[cleaned_folder]
+        for k, v in folder_map.items():
+            if k in cleaned_folder:
+                return v
+
+    # Check explicit tag_arg next
+    cleaned_tag = (tag_arg or "").strip().lower()
+    if cleaned_tag and cleaned_tag != "auto":
+        if cleaned_tag in folder_map:
+            return folder_map[cleaned_tag]
+        for k, v in folder_map.items():
+            if k in cleaned_tag:
+                return v
+
+    # Auto-detect: find closest slot to current Bangladesh time
+    current_minutes = bd_dt.hour * 60 + bd_dt.minute
+    best_folder = FIXED_SLOTS[0][2]
+    min_diff = 999999
+
+    for h, m, f_name in FIXED_SLOTS:
+        slot_minutes = h * 60 + m
+        diff = abs(current_minutes - slot_minutes)
+        if diff < min_diff:
+            min_diff = diff
+            best_folder = f_name
+
+    return best_folder
 
 def inject_timestamp_banner(page, bd_time_str, tag=""):
     """Injects a modern, high-contrast banner at the top of the page before screenshotting."""
@@ -183,35 +245,23 @@ def attempt_auto_login(page, context):
         print(f"Auto-login failed: {e}")
         return False
 
-def take_screenshot(tag="", target_url=None, zoom=None, headless=True):
+def take_screenshot(folder="", tag="", target_url=None, zoom=None, headless=True):
     target_url = target_url or config.TARGET_URL or "https://bibotracker.com/admin"
     zoom_level = zoom or config.ZOOM_LEVEL
-    os.makedirs(config.SCREENSHOTS_DIR, exist_ok=True)
 
     bd_now = get_bd_time()
-    
-    # Auto-detect tag if not provided
-    if not tag or tag.lower() == "auto":
-        hour = bd_now.hour
-        minute = bd_now.minute
-        if 5 <= hour <= 6:
-            tag = "06AM"
-        elif hour == 9 and minute < 45:
-            tag = "09_40AM"
-        elif 9 <= hour <= 11:
-            tag = "10AM"
-        elif (hour == 13 and minute >= 10) or (hour == 14 and minute <= 10):
-            tag = "01_30PM"
-        else:
-            tag = bd_now.strftime("%I_%M%p")
+    folder_name = resolve_folder(folder_arg=folder, tag_arg=tag, bd_dt=bd_now)
+    target_folder_dir = os.path.join(config.SCREENSHOTS_DIR, folder_name)
+    os.makedirs(target_folder_dir, exist_ok=True)
+
+    date_str = bd_now.strftime("%Y-%m-%d")
+    output_filename = f"{date_str}.png"
+    output_path = os.path.join(target_folder_dir, output_filename)
 
     time_display = bd_now.strftime("%Y-%m-%d %I:%M:%S %p %Z")
-    filename_time = bd_now.strftime("%Y-%m-%d_%H-%M-%S")
-    tag_slug = f"_{tag.replace(' ', '_')}" if tag else ""
-    output_filename = f"bibo{tag_slug}_{filename_time}_BST.png"
-    output_path = os.path.join(config.SCREENSHOTS_DIR, output_filename)
 
     print(f"[{time_display}] Starting screenshot capture...")
+    print(f"Folder: {folder_name} | Filename: {output_filename}")
     print(f"Target URL: {target_url}")
     print(f"Configured Zoom: {zoom_level}")
 
@@ -260,7 +310,7 @@ def take_screenshot(tag="", target_url=None, zoom=None, headless=True):
         apply_zoom(page, zoom_level)
 
         # Inject visible timestamp header
-        inject_timestamp_banner(page, time_display, tag=tag)
+        inject_timestamp_banner(page, time_display, tag=folder_name)
 
         # Capture full-page screenshot
         page.screenshot(path=output_path, full_page=True)
@@ -272,10 +322,17 @@ def take_screenshot(tag="", target_url=None, zoom=None, headless=True):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Capture BiBoTracker admin dashboard")
-    parser.add_argument("--tag", default="", help="Optional label (e.g. 06am, 10am, 02pm)")
+    parser.add_argument("--folder", default="", help="Time folder (06-10_AM, 08-20_AM, 12-55_PM, 02-00_PM)")
+    parser.add_argument("--tag", default="", help="Optional label or slot alias")
     parser.add_argument("--url", default="", help="Override target URL")
     parser.add_argument("--zoom", default="", help="Zoom level (e.g. 80%, 75%, 90%)")
     parser.add_argument("--headful", action="store_true", help="Run browser visibly")
 
     args = parser.parse_args()
-    take_screenshot(tag=args.tag, target_url=args.url or None, zoom=args.zoom or None, headless=not args.headful)
+    take_screenshot(
+        folder=args.folder,
+        tag=args.tag,
+        target_url=args.url or None,
+        zoom=args.zoom or None,
+        headless=not args.headful
+    )

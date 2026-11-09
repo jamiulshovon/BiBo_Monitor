@@ -1,6 +1,9 @@
 # remove_scheduler.ps1 - Removes BiBoTracker tasks from Windows Task Scheduler
 
-$tasks = @("BiBoTracker_0540AM", "BiBoTracker_10AM", "BiBoTracker_0130PM", "BiBoTracker_06AM", "BiBoTracker_02PM")
+$tasks = @(
+    "BiBoTracker_0610AM", "BiBoTracker_0820AM", "BiBoTracker_1255PM", "BiBoTracker_0200PM",
+    "BiBoTracker_0540AM", "BiBoTracker_06AM", "BiBoTracker_0940AM", "BiBoTracker_10AM", "BiBoTracker_0130PM", "BiBoTracker_02PM"
+)
 
 Write-Host "Removing BiBoTracker scheduled tasks..." -ForegroundColor Cyan
 
